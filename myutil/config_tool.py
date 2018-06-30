@@ -35,10 +35,12 @@ class MyConfig(object):
 def get_db_conf(section):
     """
     获取数据库配置的函数
+
+    因为没有测试机，就用同一份配置文件...
     :param section:
     :return:
     """
-    cur_dir = os.path.dirname(os.path.realpath(__file__))
+    cur_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     if config.run_venv == constant.RUN_EVEN_PRODUCE:
         config_path = os.path.join(cur_dir, './conf/db.conf')
     else:
@@ -58,6 +60,8 @@ def get_db_conf(section):
 def get_redis_conf(section):
     """
     获取redis配置的函数
+
+    因为没有测试机，就用同一份配置文件...
     :param section:
     :return:
     """
@@ -69,7 +73,7 @@ def get_redis_conf(section):
 
     cf = MyConfig(config_path)
     redis_host = cf.get(section, "host", 'localhost')
-    redis_port = int(cf.get(section, "port", '3306'))
+    redis_port = int(cf.get(section, "port", '6379'))
     redis_dbnum = cf.get(section, "db", '0')
 
     return {'host': redis_host, 'port': redis_port, 'db': redis_dbnum}

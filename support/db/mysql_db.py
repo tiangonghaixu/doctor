@@ -28,9 +28,10 @@ class DBConnection(object):
                                              user=self.cf_read['user'], passwd=self.cf_read['password'],
                                              charset=self.cf_read['charset'], cursorclass=MySQLdb.cursors.DictCursor)
             self.conn_read.autocommit(1)
-        except MySQLdb.Error, e:
+        except MySQLdb.Error, ex:
+            logger.error(ex, exc_info=1)
             self.conn_read = None
-            logger.error("connect db conn_read(%s) Error %d: %s", str(self.cf_read), e.args[0], e.args[1])
+            logger.error("connect db conn_read(%s) Error %d: %s", str(self.cf_read), ex.args[0], ex.args[1])
             raise Exception("DBConnection init failed because of read conn.")
         try:  # 同步写连接
             self.lock_obj_write = threading.Lock()
@@ -38,11 +39,12 @@ class DBConnection(object):
                                               user=self.cf_write['user'], passwd=self.cf_write['password'],
                                               charset=self.cf_write['charset'], cursorclass=MySQLdb.cursors.DictCursor)
             self.conn_write.autocommit(1)
-        except MySQLdb.Error, e:
+        except MySQLdb.Error, ex:
+            logger.error(ex, exc_info=1)
             self.conn_write = None
             if self.conn_read:  # 注意释放读连接
                 self.conn_read.close()
-            logger.error("connect db conn_write(%s) Error %d: %s", str(self.cf_write), e.args[0], e.args[1])
+            logger.error("connect db conn_write(%s) Error %d: %s", str(self.cf_write), ex.args[0], ex.args[1])
             raise Exception("DBConnection init failed  because of write conn.")
 
         print "create db instance ok....."
@@ -236,4 +238,6 @@ class DBConnection(object):
 
 doctor_conn = DBConnection(dbs_read='doctor_read', dbs_write='doctor_write')
 doctor_user_conn = DBConnection(dbs_read='doctor_user_read', dbs_write='doctor_user_write')
-doctor_sphinx_conn = DBConnection(dbs_read='doctor_sphinx', dbs_write='doctor_sphinx')
+
+# 斯芬克斯搜索引擎
+# doctor_sphinx_conn = DBConnection(dbs_read='doctor_sphinx', dbs_write='doctor_sphinx')

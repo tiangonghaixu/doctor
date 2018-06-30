@@ -4,6 +4,7 @@ import pickle
 import time
 
 from flask import jsonify
+from flask import request
 from flask.views import MethodView
 
 from common import errcode
@@ -47,22 +48,19 @@ class BaseHandler(MethodView):
 
     def _handle_request(self, request):
         body = {}
-        self.request = request
         if self.parse_from_body:
             try:
-                body = json.loads(request.body)
+                body = json.loads(request.data)
 
                 # 统一打印下请求参数
                 for key, value in body.iteritems():
                     if key == "common_param":
                         self.common_param = value
                         self.os = self.common_param["client"].split("_")[0]
-                        self.version = self.common_param["version"]
-                        self.flavor = self.common_param["flavor"] if "flavor" in self.common_param else ""
+                        self.app_version = self.common_param["app_version"]
                 logger.debug(body)
-
             except Exception, ex:
-                logger.error("[%s] request.body not json str, ex: %s", self.trace_id, ex)
+                logger.error("[%s] request.body not json str, ex: %s", self.trace_id, ex, exc_info=1)
                 self.ret_code = errcode.JSON_BODY_DECODE_ERROR
                 self.ret_msg = "request.body not json str"
                 return False
@@ -73,9 +71,9 @@ class BaseHandler(MethodView):
         for key, default_value in self.expected_para.iteritems():
             value = body.get(key, default_value)
             self.para_map[key] = value
-        if request.COOKIES:
+        if request.cookies:
             for key, default_value in self.expected_para.iteritems():
-                value = request.COOKIES.get(key, default_value)
+                value = request.cookies.get(key, default_value)
                 if value != default_value:
                     self.para_map[key] = value
         return self._check_parameters()
@@ -155,10 +153,6 @@ class BaseHandler(MethodView):
         logger.debug("[%s ###### END] 返回值: code=%s, msg=%s", self.trace_id, ret_map['ret'], ret_map['msg'])
         return jsonify(ret_map)
 
-    def get(self, request, _format=None):
-        logger.warn("[%s] Unexpected method GET, %s ", self.trace_id, request.body)
-        return ""
-
     def _stat(self):
         """
         每个接口自己实现相关的统计代码
@@ -173,10 +167,11 @@ class BaseHandler(MethodView):
         """
         pass
 
-    def post(self, request, _format=None):
+    def post(self):
+        self.request = request
         logger.debug("[%s ###### START]", self.trace_id)
 
-        ret = self._handle_request(request)
+        ret = self._handle_request(self.request)
         if ret is False:
             return self._handle_return()
 
