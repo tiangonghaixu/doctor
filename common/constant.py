@@ -1,9 +1,9 @@
 # coding=utf-8
 
+# 运行的环境
 RUN_EVEN_TEST = 1
 RUN_EVEN_PRODUCE = 2
 
-EFFECT_TIME_NOW = 1
-EFFECT_TIME_UNTIL_SOMEONE_TAKE_OVER = 2
-
-
+# 数据库参数
+CONN_READ = 1
+CONN_WRITE = 2
