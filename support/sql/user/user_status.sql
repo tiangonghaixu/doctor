@@ -1,0 +1,20 @@
+CREATE TABLE `user_status` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id,自增',
+  `cuid` varchar(128) NOT NULL,
+  `user_id` varchar(128) DEFAULT NULL,
+  `longitude` double DEFAULT '118.78' COMMENT '经度',
+  `latitude` double DEFAULT '32.04' COMMENT '维度',
+  `province` varchar(64) DEFAULT NULL,
+  `city` varchar(64) DEFAULT NULL,
+  `area` varchar(64) DEFAULT NULL,
+  `open_push` tinyint(4) DEFAULT '1' COMMENT '是否打开推送，0-关闭，1-打开',
+  `ip` varchar(64) DEFAULT '' COMMENT '注册ip',
+  `del_flag` int(11) NOT NULL DEFAULT '0',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `cuid` (`cuid`,`user_id`),
+  KEY `ip` (`ip`) USING BTREE,
+  KEY `cuid_2` (`cuid`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户状态报告表';
