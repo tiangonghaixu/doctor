@@ -70,6 +70,8 @@ class BaseHandler(MethodView):
     def _parse_parameters(self, request, body):
         for key, default_value in self.expected_para.iteritems():
             value = body.get(key, default_value)
+            if isinstance(value, unicode):
+                value = value.encode("utf-8")
             self.para_map[key] = value
         if request.cookies:
             for key, default_value in self.expected_para.iteritems():
