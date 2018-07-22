@@ -15,7 +15,7 @@ class UserDao(BaseDao):
         :return:
         """
 
-        sql = "select id,user_name,avatar,sex from {db}.{table} where del_flag=0 and id={user_id}". \
+        sql = "select id, user_name, avatar, sex from {db}.{table} where del_flag=0 and id={user_id}". \
             format(db=cls.db_name,
                    table=cls.table_name,
                    user_id=user_id)
